@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+
+# Install npm if not available
+if ! command -v npm &> /dev/null; then
+  echo "npm not found, installing Node.js..."
+  # Detect OS and install Node.js accordingly
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install node
+  fi
+fi
+
+# Install Codex CLI globally
+npm install -g @openai/codex
+
+# Create Codex config with interpolated values
+mkdir -p ~/.codex
+cat > ~/.codex/config.toml <<EOF
+model_provider = "hosted-models"
+name = "gpt-5-codex"
+reasoning_level = "high"
+
+[model_providers.hosted-models]
+name = "hosted-models"
+wire_api = "responses"
+env_key = "BUILDKITE_AGENT_ACCESS_TOKEN"
+base_url = "$BUILDKITE_AGENT_ENDPOINT/ai/openai/v1"
+EOF

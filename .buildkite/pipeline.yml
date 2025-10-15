@@ -1,0 +1,5 @@
+steps:
+  - label: ":openai: OpenAI Codex Test"
+    command: |
+      # Run a test prompt using Codex CLI (installed in pre-command hook)
+      echo "Write a simple hello world function in Python" | codex exec
